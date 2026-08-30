@@ -1,0 +1,19 @@
+:root {
+  --zombicide-accent: #9b2028;
+  --zombicide-panel: #e9e4da;
+  --zombicide-ink: #292623;
+}
+
+.zombicide {
+  color: var(--zombicide-ink);
+}
+
+.zombicide .window-content {
+  background: var(--zombicide-panel);
+}
+
+.zombicide h1,
+.zombicide h2,
+.zombicide h3 {
+  border-color: var(--zombicide-accent);
+}

@@ -1,0 +1,64 @@
+{
+  "id": "zombicide",
+  "title": "Zombicide Game System",
+  "description": "A rules-engine foundation for running Zombicide missions in Foundry Virtual Tabletop.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13.351",
+    "verified": "13.351",
+    "maximum": "13.351"
+  },
+  "authors": [
+    {
+      "name": "Zombicide Game System contributors"
+    }
+  ],
+  "esmodules": [
+    "zombicide.mjs"
+  ],
+  "styles": [
+    "styles/zombicide.css",
+    "styles/sheets.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "es",
+      "name": "Español",
+      "path": "lang/es.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "survivor": {},
+      "zombie": {},
+      "vehicle": {}
+    },
+    "Item": {
+      "weapon": {},
+      "equipment": {},
+      "skill": {}
+    },
+    "Card": {
+      "equipment": {},
+      "spawn": {}
+    },
+    "Cards": {
+      "equipmentDeck": {},
+      "equipmentInPlay": {},
+      "equipmentDiscard": {},
+      "spawnDeck": {},
+      "spawnDiscard": {}
+    }
+  },
+  "socket": true,
+  "grid": {
+    "distance": 1,
+    "units": "zone"
+  },
+  "license": "LICENSE"
+}

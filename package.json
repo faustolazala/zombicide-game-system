@@ -1,0 +1,14 @@
+{
+  "name": "zombicide-game-system",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Foundry VTT 13.351 game system foundation for Zombicide.",
+  "scripts": {
+    "test": "node --test --test-isolation=none",
+    "check": "node --check zombicide.mjs && node --test --test-isolation=none"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

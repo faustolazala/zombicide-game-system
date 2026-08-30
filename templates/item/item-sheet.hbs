@@ -1,0 +1,47 @@
+<section class="sheet-body {{itemType}}">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{item.img}}" data-edit="img" alt="{{item.name}}">
+    <label>
+      {{localize "Name"}}
+      <input name="name" type="text" value="{{item.name}}" {{#unless editable}}disabled{{/unless}}>
+    </label>
+  </header>
+
+  {{#if isWeapon}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Dice"}}
+        <input name="system.dice" type="number" min="0" value="{{system.dice}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Accuracy"}}
+        <input name="system.accuracy" type="number" min="1" max="6" value="{{system.accuracy}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Damage"}}
+        <input name="system.damage" type="number" min="0" value="{{system.damage}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  {{#if isEquipment}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Quantity"}}
+        <input name="system.quantity" type="number" min="0" value="{{system.quantity}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  {{#if isSkill}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Profile"}}
+        <input name="system.rulesetKey" type="text" value="{{system.rulesetKey}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  <label>{{localize "ZOMBICIDE.Fields.Description"}}
+    <textarea name="system.description" {{#unless editable}}disabled{{/unless}}>{{system.description}}</textarea>
+  </label>
+
+  {{#if editable}}
+    <button type="submit"><i class="fa-solid fa-floppy-disk"></i> {{localize "Save"}}</button>
+  {{/if}}
+</section>

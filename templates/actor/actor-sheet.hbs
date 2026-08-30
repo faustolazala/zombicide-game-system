@@ -1,0 +1,67 @@
+<section class="sheet-body {{actorType}}">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" alt="{{actor.name}}">
+    <label>
+      {{localize "Name"}}
+      <input name="name" type="text" value="{{actor.name}}" {{#unless editable}}disabled{{/unless}}>
+    </label>
+  </header>
+
+  {{#if isSurvivor}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Wounds"}}
+        <input name="system.wounds.value" type="number" min="0" value="{{system.wounds.value}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Adrenaline"}}
+        <input name="system.adrenaline.value" type="number" min="0" value="{{system.adrenaline.value}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Actions"}}
+        <input name="system.actions.baseOverride" type="number" min="0" value="{{system.actions.baseOverride}}" placeholder="3" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  {{#if isZombie}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Profile"}}
+        <input name="system.zombieType" type="text" value="{{system.zombieType}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Actions"}}
+        <input name="system.profile.actions" type="number" min="0" value="{{system.profile.actions}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Damage"}}
+        <input name="system.profile.damage" type="number" min="0" value="{{system.profile.damage}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  {{#if isVehicle}}
+    <section class="field-grid">
+      <label>{{localize "ZOMBICIDE.Fields.Profile"}}
+        <input name="system.vehicleType" type="text" value="{{system.vehicleType}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+      <label>{{localize "ZOMBICIDE.Fields.Seats"}}
+        <input name="system.seats.capacity" type="number" min="1" value="{{system.seats.capacity}}" {{#unless editable}}disabled{{/unless}}>
+      </label>
+    </section>
+  {{/if}}
+
+  <label>{{localize "ZOMBICIDE.Fields.Description"}}
+    <textarea name="system.description" {{#unless editable}}disabled{{/unless}}>{{system.description}}</textarea>
+  </label>
+
+  {{#if items.length}}
+    <section>
+      <h2>{{localize "ITEM.Type"}}</h2>
+      <ul>
+        {{#each items}}
+          <li>{{name}} ({{type}})</li>
+        {{/each}}
+      </ul>
+    </section>
+  {{/if}}
+
+  {{#if editable}}
+    <button type="submit"><i class="fa-solid fa-floppy-disk"></i> {{localize "Save"}}</button>
+  {{/if}}
+</section>
