@@ -287,9 +287,10 @@ export function registerMissionStateSheetSync() {
     const stateChanged = Object.hasOwn(changes, statePath)
       || foundry.utils.hasProperty(changes, statePath);
     if (!stateChanged) return;
-    for (const actor of game.actors ?? []) {
-      if (actor.type !== "survivor" || !actor.sheet?.rendered) continue;
-      Promise.resolve(actor.sheet.render({force: true})).catch(error => {
+    const applications = foundry.applications.instances?.values?.() ?? [];
+    for (const sheet of applications) {
+      if (sheet.actor?.type !== "survivor" || !sheet.rendered) continue;
+      Promise.resolve(sheet.render({force: true})).catch(error => {
         console.warn("Zombicide | Could not refresh a Survivor sheet after mission state changed", error);
       });
     }

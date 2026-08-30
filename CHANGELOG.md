@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3 — 2026-08-30
+
+- Persist explicit Survivor Phase completion when the final assigned Survivor ends activation.
+- Keep completion/progress derived from authoritative assignments after every command and refresh.
+- Add a clear cross-client phase transition signal for the turn tracker.
+
 ## 0.2.2 — 2026-08-30
 
 - Derive final Survivor Phase completion from the remaining assigned Survivors and skip stale empty player entries.
