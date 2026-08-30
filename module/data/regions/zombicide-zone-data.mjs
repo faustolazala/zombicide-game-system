@@ -12,9 +12,10 @@ export class ZombicideZoneData extends RegionBehaviorType {
   static LOCALIZATION_PREFIXES = ["ZOMBICIDE.RegionBehavior.zombicideZone"];
 
   static defineSchema() {
-    const base = typeof super.defineSchema === "function" ? super.defineSchema() : {};
+    // RegionBehaviorType inherits the abstract TypeDataModel schema contract;
+    // its base implementation intentionally throws because the subtype must
+    // provide the document schema itself. Do not call super.defineSchema().
     return {
-      ...base,
       enabled: booleanField(true),
       zoneId: stringField(),
       type: new fields.StringField({

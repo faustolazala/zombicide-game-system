@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 — 2026-08-30
+
+- Fix Foundry 13.351 startup failure by defining the `zombicideZone` RegionBehavior schema directly instead of calling the abstract base schema method.
+
 ## 0.3.0 — 2026-08-30
 
 - Add the Region-based Zone Engine for Foundry VTT 13.351.

@@ -41,7 +41,7 @@ globalThis.foundry = {
       SchemaField: DataField,
       StringField: DataField
     },
-    regionBehaviors: {RegionBehaviorType: class {}}
+    regionBehaviors: {RegionBehaviorType: class { static defineSchema() { throw new Error("abstract schema"); } }}
   },
   utils: {
     mergeObject: (base, additions) => ({...base, ...additions})
@@ -86,6 +86,7 @@ test("registers every Milestone 1 TypeDataModel", () => {
   assert.equal(CONFIG.Actor.dataModels.survivor.defineSchema().adrenaline instanceof DataField, true);
   assert.equal(CONFIG.Item.dataModels.weapon.defineSchema().damage instanceof DataField, true);
   assert.equal(CONFIG.Card.dataModels.spawn.defineSchema().dangerEntries instanceof DataField, true);
+  assert.doesNotThrow(() => CONFIG.RegionBehavior.dataModels.zombicideZone.defineSchema());
 });
 
 test("registers default ApplicationV2 sheets for all Actor and Item types", () => {
