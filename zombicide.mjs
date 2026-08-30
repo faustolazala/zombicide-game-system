@@ -22,6 +22,23 @@ import {
   requestSurvivorCommand,
   SURVIVOR_COMMANDS
 } from "./module/foundry/survivor-commands.mjs";
+import {
+  registerZoneCommands,
+  requestZoneCommand,
+  ZONE_COMMANDS,
+  getSceneZoneGraph,
+  validateSceneBoard
+} from "./module/foundry/zone-commands.mjs";
+import {openZombicideZoneEditor} from "./module/applications/zone-editor.mjs";
+import {openZombicideZoneDebugOverlay} from "./module/applications/zone-debug-overlay.mjs";
+import {
+  getSceneSurvivorsInZone,
+  getSceneTokensInZone,
+  getSceneZombiesInZone,
+  getTokenZoneInScene,
+  getZoneDebugSnapshot,
+  registerZoneRuntimeHooks
+} from "./module/foundry/zone-runtime.mjs";
 
 Hooks.once("init", () => {
   console.info(`${SYSTEM_TITLE} | Initializing for Foundry ${TARGET_FOUNDRY_VERSION}`);
@@ -30,6 +47,8 @@ Hooks.once("init", () => {
   registerSettings();
   registerAuthorityHooks();
   registerSurvivorCommands();
+  registerZoneCommands();
+  registerZoneRuntimeHooks();
 
   game.zombicide = {
     GameStateModel,
@@ -37,6 +56,30 @@ Hooks.once("init", () => {
     survivors: {
       commandTypes: SURVIVOR_COMMANDS,
       request: requestSurvivorCommand
+    },
+    zones: {
+      commandTypes: ZONE_COMMANDS,
+      request: requestZoneCommand,
+      openEditor: openZombicideZoneEditor,
+      openDebugOverlay: openZombicideZoneDebugOverlay,
+      getTokenZone: getTokenZoneInScene,
+      getTokensInZone: getSceneTokensInZone,
+      getSurvivorsInZone: getSceneSurvivorsInZone,
+      getZombiesInZone: getSceneZombiesInZone,
+      debugSnapshot: async (scene) => {
+        scene ??= await getActiveMissionScene();
+        return getZoneDebugSnapshot(scene);
+      },
+      getGraph: async (scene) => {
+        scene ??= await getActiveMissionScene();
+        const state = await loadGameState(scene);
+        return getSceneZoneGraph(scene, state.toObject());
+      },
+      validate: async (scene) => {
+        scene ??= await getActiveMissionScene();
+        const state = await loadGameState(scene);
+        return validateSceneBoard(scene, state.toObject());
+      }
     },
     commands: {
       register: registerCommandHandler,

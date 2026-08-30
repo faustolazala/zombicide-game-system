@@ -17,6 +17,7 @@ import {
   ZombieSheet
 } from "../applications/actor-sheet.mjs";
 import {ZombicideItemSheet} from "../applications/item-sheet.mjs";
+import {ZombicideZoneData} from "../data/regions/zombicide-zone-data.mjs";
 
 export function registerDocumentsAndDataModels() {
   CONFIG.Actor.documentClass = ZombicideActor;
@@ -43,6 +44,11 @@ export function registerDocumentsAndDataModels() {
     spawnDeck: CardStackData,
     spawnDiscard: CardStackData
   });
+  if (CONFIG.RegionBehavior) {
+    CONFIG.RegionBehavior.dataModels.zombicideZone = ZombicideZoneData;
+    CONFIG.RegionBehavior.typeLabels.zombicideZone = "ZOMBICIDE.RegionBehavior.zombicideZone.Label";
+    CONFIG.RegionBehavior.typeIcons.zombicideZone = "fa-solid fa-map-location-dot";
+  }
 }
 
 export function registerSheets() {

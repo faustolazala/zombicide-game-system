@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-08-30
+
+- Add the Region-based Zone Engine for Foundry VTT 13.351.
+- Register the typed `zombicideZone` RegionBehavior and GM Zone Editor.
+- Add explicit zone graph edges, door-derived connectivity, street sight lanes, and visibility overrides.
+- Add token membership, board validation, Modern 2E LOS, building reveal state, and transient noise services.
+- Add zone runtime helpers, debug snapshots, localized UI, and Milestone 3 test coverage.
+
 ## 0.2.3 — 2026-08-30
 
 - Persist explicit Survivor Phase completion when the final assigned Survivor ends activation.

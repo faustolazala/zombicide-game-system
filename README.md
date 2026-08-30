@@ -1,6 +1,6 @@
 # Zombicide Game System
 
-An early Foundry Virtual Tabletop game-system implementation based on the repository's implementation plan. The current code covers Milestones 0–2: typed Documents, canonical Scene state, multiplayer authority, and manual Survivor-turn bookkeeping.
+An early Foundry Virtual Tabletop game-system implementation based on the repository's implementation plan. The current code covers Milestones 0–3: typed Documents, canonical Scene state, multiplayer authority, Survivor turns, and the Region-based Zone Engine.
 
 ## Compatibility
 
@@ -47,6 +47,35 @@ The manifest tracks the newest completed milestone release. Before updating, bac
 9. Click **End Activation**. After all of the player's assigned Survivors activate once, control must pass to the next player. The tracker shows completed/total and pending Survivors. After all players finish, every open sheet must show **Zombie Phase** and chat must announce the transition.
 10. Refresh both clients during the turn and confirm action, inventory, player-order, and phase state persists without duplicate actions.
 
+## Milestone 3 test flow
+
+1. As GM, draw Foundry Regions over the board zones on the active mission Scene.
+2. Open the Zone Editor from the console:
+
+   ```js
+   await game.zombicide.zones.openEditor()
+   ```
+
+3. Give every Region a stable Zone ID and type. Assign `buildingId` to every room/dark Zone; configure a street sight axis for street Zones.
+4. In the graph JSON editor, configure explicit `edges`, `sightLanes`, and any `visibilityOverrides`, then click **Save Graph**.
+5. Click **Validate Board**. Fix missing IDs, broken door UUIDs, disconnected components, missing sight lanes, or ambiguous/out-of-zone Tokens reported by the validator.
+6. Use the API for focused checks while building a board:
+
+   ```js
+   await game.zombicide.zones.validate()
+   await game.zombicide.zones.getGraph()
+   await game.zombicide.zones.debugSnapshot()
+   await game.zombicide.zones.openDebugOverlay()
+   game.zombicide.zones.getTokenZone(token)
+   game.zombicide.zones.getSurvivorsInZone("zone-001")
+   game.zombicide.zones.getZombiesInZone("zone-001")
+   ```
+
+7. Configure a graph edge with `type: "door"` and its Foundry Wall UUID. Opening/closing that Wall changes movement and LOS; the first qualifying opening records building reveal state and later openings do not retrigger it.
+8. Add and clear transient noise through `game.zombicide.zones.request("zone.addNoise", {zoneId, amount, source})` or the corresponding GM command handlers. Noise is stored in authoritative Scene state and is visible in `debugSnapshot()`.
+
+The Zone Engine is intentionally rules-first: combat, objective resolution, card draws, spawning, and zombie AI consume these services in later milestones.
+
 ## Development checks
 
 Run the Foundry-independent state and command tests with:
@@ -84,8 +113,8 @@ Implemented:
 
 Not yet implemented:
 
-- Mission setup UI and zone/RegionBehavior topology.
-- Zone-aware movement, searching, doors, objectives, combat, cards lifecycle, zombie spawning, or zombie AI.
+- Mission setup UI beyond the GM Zone Editor and board validation.
+- Zone-aware movement, searching, objectives, combat, cards lifecycle, zombie spawning, or zombie AI.
 - Vehicle/car gameplay automation.
 - Full transaction reconciliation UI and undo tooling.
 - Production compendium packaging or copyrighted game content.

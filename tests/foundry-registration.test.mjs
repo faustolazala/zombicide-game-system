@@ -14,18 +14,9 @@ class StubItemSheetV2 {}
 
 globalThis.foundry = {
   abstract: {TypeDataModel: class {}},
-  data: {
-    fields: {
-      ArrayField: DataField,
-      BooleanField: DataField,
-      NumberField: DataField,
-      ObjectField: DataField,
-      SchemaField: DataField,
-      StringField: DataField
-    }
-  },
   applications: {
     api: {
+      ApplicationV2: class {},
       HandlebarsApplicationMixin: Base => class extends Base {}
     },
     sheets: {
@@ -41,6 +32,17 @@ globalThis.foundry = {
       }
     }
   },
+  data: {
+    fields: {
+      ArrayField: DataField,
+      BooleanField: DataField,
+      NumberField: DataField,
+      ObjectField: DataField,
+      SchemaField: DataField,
+      StringField: DataField
+    },
+    regionBehaviors: {RegionBehaviorType: class {}}
+  },
   utils: {
     mergeObject: (base, additions) => ({...base, ...additions})
   }
@@ -51,7 +53,8 @@ globalThis.CONFIG = {
   Actor: {documentClass: StubActor, dataModels: {}},
   Item: {documentClass: StubItem, dataModels: {}},
   Card: {dataModels: {}},
-  Cards: {dataModels: {}}
+  Cards: {dataModels: {}},
+  RegionBehavior: {dataModels: {}, typeLabels: {}, typeIcons: {}}
 };
 
 const {registerDocumentsAndDataModels, registerSheets} = await import("../module/foundry/register-system.mjs");
@@ -79,6 +82,7 @@ test("registers every Milestone 1 TypeDataModel", () => {
     "spawnDeck",
     "spawnDiscard"
   ]);
+  assert.equal(CONFIG.RegionBehavior.dataModels.zombicideZone.name, "ZombicideZoneData");
   assert.equal(CONFIG.Actor.dataModels.survivor.defineSchema().adrenaline instanceof DataField, true);
   assert.equal(CONFIG.Item.dataModels.weapon.defineSchema().damage instanceof DataField, true);
   assert.equal(CONFIG.Card.dataModels.spawn.defineSchema().dangerEntries instanceof DataField, true);
@@ -136,6 +140,10 @@ test("initialization and ready hooks expose a usable system API", async () => {
   assert.equal(typeof game.zombicide.state.ensure, "function");
   assert.equal(typeof game.zombicide.createPlaceholderContent, "function");
   assert.equal(typeof game.zombicide.survivors.request, "function");
+  assert.equal(typeof game.zombicide.zones.request, "function");
+  assert.equal(typeof game.zombicide.zones.openEditor, "function");
+  assert.equal(typeof game.zombicide.zones.openDebugOverlay, "function");
+  assert.equal(typeof game.zombicide.zones.getTokenZone, "function");
   assert.equal(game.zombicide.survivors.commandTypes.START_ACTIVATION, "survivor.startActivation");
   assert.equal(onHooks.has("userConnected"), true);
 });

@@ -100,6 +100,11 @@ export function createInitialGameState({missionId = "", gameStarted = false} = {
     activeSurvivorUuid: null,
     activatedSurvivorUuids: [],
     actionStateBySurvivorUuid: {},
+    zoneGraph: {
+      edges: [],
+      sightLanes: {},
+      visibilityOverrides: []
+    },
     noise: {},
     spawnOrder: [],
     buildingState: {},
@@ -163,6 +168,15 @@ function cleanNullableString(value) {
   return typeof value === "string" && value.length > 0 ? value : null;
 }
 
+function cleanZoneGraph(value) {
+  const source = record(value);
+  return {
+    edges: Array.isArray(source.edges) ? clone(source.edges) : [],
+    sightLanes: record(source.sightLanes),
+    visibilityOverrides: Array.isArray(source.visibilityOverrides) ? clone(source.visibilityOverrides) : []
+  };
+}
+
 export function cleanGameState(source) {
   const migrated = migrateGameState(source);
   const defaults = createInitialGameState();
@@ -184,6 +198,7 @@ export function cleanGameState(source) {
     activeSurvivorUuid: cleanNullableString(migrated.activeSurvivorUuid),
     activatedSurvivorUuids: stringArray(migrated.activatedSurvivorUuids),
     actionStateBySurvivorUuid: actionStates(migrated.actionStateBySurvivorUuid),
+    zoneGraph: cleanZoneGraph(migrated.zoneGraph),
     noise: record(migrated.noise),
     spawnOrder: stringArray(migrated.spawnOrder),
     buildingState: record(migrated.buildingState),
@@ -223,6 +238,7 @@ export function validateGameState(state) {
   for (const [path, value] of [
     ["survivorsByPlayer", state.survivorsByPlayer],
     ["actionStateBySurvivorUuid", state.actionStateBySurvivorUuid],
+    ["zoneGraph", state.zoneGraph],
     ["noise", state.noise],
     ["buildingState", state.buildingState],
     ["objectiveState", state.objectiveState]

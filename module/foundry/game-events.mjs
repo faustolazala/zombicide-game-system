@@ -13,7 +13,14 @@ const CHAT_EVENT_TYPES = new Set([
   "adrenalineChanged",
   "woundsChanged",
   "missionDefeat",
-  "automationResumed"
+  "automationResumed",
+  "zoneBehaviorChanged",
+  "zoneGraphConfigured",
+  "zoneBoardValidated",
+  "zoneDoorStateChanged",
+  "buildingRevealed",
+  "noiseAdded",
+  "noiseCleared"
 ]);
 
 export async function publishGameEvents(events, {transactionId} = {}) {

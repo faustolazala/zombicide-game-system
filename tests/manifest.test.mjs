@@ -30,6 +30,7 @@ test("manifest declares all Milestone 1 document subtypes", () => {
   assert.deepEqual(Object.keys(manifest.documentTypes.Item), ["weapon", "equipment", "skill"]);
   assert.deepEqual(Object.keys(manifest.documentTypes.Card), ["equipment", "spawn"]);
   assert.equal(Object.keys(manifest.documentTypes.Cards).length, 5);
+  assert.deepEqual(Object.keys(manifest.documentTypes.RegionBehavior), ["zombicideZone"]);
   assert.equal(manifest.socket, true);
 });
 

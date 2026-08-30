@@ -2,7 +2,7 @@
   "id": "zombicide",
   "title": "Zombicide Game System",
   "description": "A rules-engine foundation for running Zombicide missions in Foundry Virtual Tabletop.",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "compatibility": {
     "minimum": "13.351",
     "verified": "13.351",
@@ -16,7 +16,7 @@
   ],
   "url": "https://github.com/faustolazala/zombicide-game-system",
   "manifest": "https://raw.githubusercontent.com/faustolazala/zombicide-game-system/main/system.json",
-  "download": "https://github.com/faustolazala/zombicide-game-system/releases/download/v0.2.3/zombicide-v0.2.3.zip",
+  "download": "https://github.com/faustolazala/zombicide-game-system/releases/download/v0.3.0/zombicide-v0.3.0.zip",
   "esmodules": [
     "zombicide.mjs"
   ],
@@ -57,6 +57,9 @@
       "equipmentDiscard": {},
       "spawnDeck": {},
       "spawnDiscard": {}
+    },
+    "RegionBehavior": {
+      "zombicideZone": {}
     }
   },
   "socket": true,

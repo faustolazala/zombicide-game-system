@@ -76,6 +76,88 @@
 .zombicide.sheet .danger-orange { border-color: #c4661b; }
 .zombicide.sheet .danger-red { border-color: #a11e25; }
 
+.zombicide.zone-editor .window-content {
+  overflow: auto;
+}
+
+.zombicide.zone-editor .zone-editor-body {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.75rem;
+}
+
+.zombicide.zone-editor .zone-editor-header,
+.zombicide.zone-editor .zone-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.zombicide.zone-editor .zone-editor-header {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--zombicide-accent);
+}
+
+.zombicide.zone-editor .zone-editor-regions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.zombicide.zone-editor .zone-row {
+  border: 1px solid color-mix(in srgb, var(--zombicide-accent), transparent 55%);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.zombicide.zone-editor .zone-row strong {
+  min-width: 10rem;
+}
+
+.zombicide.zone-editor .zone-row label {
+  min-width: 7rem;
+}
+
+.zombicide.zone-editor .zone-graph-editor {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.zombicide.zone-editor textarea[name="graphJson"] {
+  min-height: 14rem;
+  font-family: var(--font-monospace);
+}
+
+.zombicide.zone-editor .zone-validation.valid { color: #1d6b32; }
+.zombicide.zone-editor .zone-validation.invalid { color: #a11e25; }
+
+.zombicide.zone-debug-overlay .window-content {
+  overflow: auto;
+}
+
+.zombicide.zone-debug-overlay .zone-debug-body {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem;
+}
+
+.zombicide.zone-debug-overlay .zone-debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--zombicide-accent);
+}
+
+.zombicide.zone-debug-overlay h3 {
+  margin: 0.55rem 0 0.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--zombicide-accent), transparent 45%);
+}
+
+.zombicide.zone-debug-overlay ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
 .zombicide.sheet .inventory-list {
   display: grid;
   gap: 0.5rem;

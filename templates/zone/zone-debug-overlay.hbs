@@ -1,0 +1,18 @@
+<section class="zone-debug-body">
+  <header class="zone-debug-header">
+    <h2>{{sceneName}}</h2>
+    <button type="button" data-action="refresh">{{localize "ZOMBICIDE.ZoneDebug.Refresh"}}</button>
+  </header>
+  <h3>{{localize "ZOMBICIDE.ZoneDebug.Zones"}}</h3>
+  <ul>
+    {{#each zones}}<li><code>{{zoneId}}</code> — {{type}}{{#if buildingId}} ({{buildingId}}){{/if}}</li>{{else}}<li>—</li>{{/each}}
+  </ul>
+  <h3>{{localize "ZOMBICIDE.ZoneDebug.Tokens"}}</h3>
+  <ul>
+    {{#each tokens}}<li>{{name}}: {{#if membership.ambiguous}}{{localize "ZOMBICIDE.ZoneDebug.Ambiguous"}}{{else}}{{membership.zoneId}}{{/if}}</li>{{else}}<li>—</li>{{/each}}
+  </ul>
+  <h3>{{localize "ZOMBICIDE.ZoneDebug.Noise"}}</h3>
+  <ul>{{#each noise}}<li>{{this.[0]}}: {{this.[1]}}</li>{{else}}<li>—</li>{{/each}}</ul>
+  <h3>{{localize "ZOMBICIDE.ZoneDebug.Buildings"}}</h3>
+  <ul>{{#each buildingState}}<li>{{this.[0]}}: {{#if this.[1].revealed}}{{localize "ZOMBICIDE.ZoneDebug.Revealed"}}{{else}}{{localize "ZOMBICIDE.ZoneDebug.Unopened"}}{{/if}}</li>{{else}}<li>—</li>{{/each}}</ul>
+</section>

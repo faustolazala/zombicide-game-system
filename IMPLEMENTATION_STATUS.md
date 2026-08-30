@@ -44,9 +44,23 @@ Target: **Foundry VTT 13.351**
 - [x] Unit coverage for turns, permissions, actions, refunds, inventory, vitals, and Document commits.
 - [ ] Live multiplayer Milestone 2 test flow completed in Foundry 13.351.
 
+## Milestone 3 — Zone Engine
+
+- [x] Typed `zombicideZone` RegionBehavior DataModel registered for Foundry 13.351.
+- [x] GM Zone Editor for Region behavior, explicit graph edges, street sight lanes, and visibility overrides.
+- [x] Zone membership by Token center with priority and ambiguity detection.
+- [x] Explicit Zone graph with open, door, blocked, one-way, and special edges.
+- [x] Foundry Wall door state derived into graph snapshots and runtime invalidation hooks.
+- [x] Board validation for IDs, building assignments, door references, sight lanes, connectivity, spawn zones, and token membership.
+- [x] Building IDs, first-open reveal state, and one-time reveal events.
+- [x] Zone-based transient noise with add/remove/clear/query services.
+- [x] Modern 2E LOS service for rooms, streets, doors, blockers, lanes, transitions, and overrides.
+- [x] Zone debug snapshot API and membership/graph invalidation hooks.
+- [x] Unit coverage for graph paths, doors, membership, LOS, reveal, noise, commands, and Foundry registration.
+- [ ] Live Zone Engine acceptance flow completed in Foundry 13.351.
+
 ## Deliberately deferred
 
-- RegionBehavior zone schema, graph, doors, and LOS (Milestone 3).
 - Combat, objectives, cards, zombie, vehicle, and end-phase engines (Milestones 4–10).
 - Multiplayer hardening and recovery UI (Milestone 11).
 - UX, packaging, and compendia (Milestones 12–13).

@@ -1,6 +1,6 @@
 {
   "name": "zombicide-game-system",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Foundry VTT 13.351 game system foundation for Zombicide.",

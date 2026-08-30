@@ -1,0 +1,55 @@
+<section class="zone-editor-body">
+  <header class="zone-editor-header">
+    <h2>{{sceneName}}</h2>
+    <div>
+      <button type="button" data-action="refresh">{{localize "ZOMBICIDE.ZoneEditor.Refresh"}}</button>
+      <button type="button" data-action="validateBoard">{{localize "ZOMBICIDE.ZoneEditor.Validate"}}</button>
+    </div>
+  </header>
+
+  {{#if regions.length}}
+    <div class="zone-editor-regions">
+      {{#each regions}}
+        <div class="zone-row" data-region-uuid="{{uuid}}">
+          <strong>{{name}}</strong>
+          <label>{{localize "ZOMBICIDE.ZoneEditor.ZoneId"}}<input name="zoneId" value="{{zoneId}}"></label>
+          <label>{{localize "ZOMBICIDE.ZoneEditor.Type"}}
+            <select name="type">
+              <option value="street" {{#if isStreet}}selected{{/if}}>street</option>
+              <option value="room" {{#if isRoom}}selected{{/if}}>room</option>
+              <option value="dark" {{#if isDark}}selected{{/if}}>dark</option>
+              <option value="special" {{#if isSpecial}}selected{{/if}}>special</option>
+            </select>
+          </label>
+          <label>{{localize "ZOMBICIDE.ZoneEditor.StreetAxis"}}
+            <select name="streetAxis">
+              <option value="">—</option>
+              <option value="horizontal" {{#if isHorizontal}}selected{{/if}}>horizontal</option>
+              <option value="vertical" {{#if isVertical}}selected{{/if}}>vertical</option>
+            </select>
+          </label>
+          <label>{{localize "ZOMBICIDE.ZoneEditor.Building"}}<input name="buildingId" value="{{buildingId}}"></label>
+          <label>{{localize "ZOMBICIDE.ZoneEditor.Priority"}}<input name="membershipPriority" type="number" value="{{membershipPriority}}"></label>
+          <label><input name="searchable" type="checkbox" {{#if searchable}}checked{{/if}}> searchable</label>
+          <label><input name="spawnZone" type="checkbox" {{#if spawnZone}}checked{{/if}}> spawn</label>
+          <label><input name="objectiveZone" type="checkbox" {{#if objectiveZone}}checked{{/if}}> objective</label>
+          <label><input name="exitZone" type="checkbox" {{#if exitZone}}checked{{/if}}> exit</label>
+          <button type="button" data-action="saveZone">{{localize "ZOMBICIDE.ZoneEditor.SaveZone"}}</button>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>{{localize "ZOMBICIDE.ZoneEditor.NoRegions"}}</p>
+  {{/if}}
+
+  <label class="zone-graph-editor">{{localize "ZOMBICIDE.ZoneEditor.Graph"}}
+    <textarea name="graphJson" spellcheck="false">{{graphJson}}</textarea>
+  </label>
+  <button type="button" data-action="configureGraph">{{localize "ZOMBICIDE.ZoneEditor.ConfigureGraph"}}</button>
+
+  {{#if validation}}
+    <p class="zone-validation {{#if validation.valid}}valid{{else}}invalid{{/if}}">
+      {{#if validation.valid}}{{localize "ZOMBICIDE.ZoneEditor.Valid"}}{{else}}{{localize "ZOMBICIDE.ZoneEditor.Invalid"}} ({{validation.errors.length}}){{/if}}
+    </p>
+  {{/if}}
+</section>
