@@ -1,7 +1,9 @@
 import {getActionsRemaining, SURVIVOR_ACTIONS} from "../engine/survivor/action-economy.mjs";
 import {getItemLocation} from "../engine/survivor/inventory.mjs";
+import {getSurvivorTurnProgress} from "../engine/survivor/turn-engine.mjs";
 import {requestSurvivorCommand, SURVIVOR_COMMANDS} from "../foundry/survivor-commands.mjs";
 import {getActiveMissionScene, loadGameState} from "../state/game-state-store.mjs";
+import {SCENE_STATE_FLAG, SYSTEM_ID} from "../config/constants.mjs";
 
 const {HandlebarsApplicationMixin} = foundry.applications.api;
 const {ActorSheetV2} = foundry.applications.sheets;
@@ -78,6 +80,9 @@ export class ZombicideActorSheet extends HandlebarsApplicationMixin(ActorSheetV2
         .find(([, survivorUuids]) => Array.isArray(survivorUuids) && survivorUuids.includes(this.actor.uuid))?.[0] ?? null
       : null;
     const actionState = missionState?.actionStateBySurvivorUuid?.[this.actor.uuid] ?? null;
+    const turnProgress = missionState
+      ? getSurvivorTurnProgress(missionState)
+      : {activatedCount: 0, totalCount: 0, pendingSurvivorUuids: []};
     const remaining = actionState
       ? getActionsRemaining(actionState)
       : {general: 0, restricted: 0, total: 0};
@@ -120,11 +125,19 @@ export class ZombicideActorSheet extends HandlebarsApplicationMixin(ActorSheetV2
     return {
       missionConfigured: Boolean(missionState?.playerOrder?.length),
       missionPhase: missionState?.phase ?? "setup",
+      missionPhaseLabel: `ZOMBICIDE.Phase.${missionState?.phase ?? "setup"}`,
       missionRevision: missionState?.revision ?? 0,
       gameOver: Boolean(missionState?.flags?.gameOver),
       assignedPlayerUserUuid,
       activePlayerName: activePlayer?.name ?? "—",
       firstPlayerName: firstPlayer?.name ?? "—",
+      activatedSurvivorCount: turnProgress.activatedCount,
+      assignedSurvivorCount: turnProgress.totalCount,
+      pendingSurvivors: turnProgress.pendingSurvivorUuids.map(uuid => ({
+        uuid,
+        name: game.actors.find(actor => actor.uuid === uuid)?.name ?? uuid
+      })),
+      isZombiePhase: missionState?.phase === "zombie",
       activationStatus: actionState?.status ?? "ready",
       actionsRemaining: remaining,
       isActiveSurvivor: isActive,
@@ -263,3 +276,22 @@ export class ZombicideActorSheet extends HandlebarsApplicationMixin(ActorSheetV2
 export class SurvivorSheet extends ZombicideActorSheet {}
 export class ZombieSheet extends ZombicideActorSheet {}
 export class VehicleSheet extends ZombicideActorSheet {}
+
+let missionStateSheetSyncRegistered = false;
+
+export function registerMissionStateSheetSync() {
+  if (missionStateSheetSyncRegistered || typeof Hooks === "undefined") return;
+  missionStateSheetSyncRegistered = true;
+  const statePath = `flags.${SYSTEM_ID}.${SCENE_STATE_FLAG}`;
+  Hooks.on("updateScene", (_scene, changes) => {
+    const stateChanged = Object.hasOwn(changes, statePath)
+      || foundry.utils.hasProperty(changes, statePath);
+    if (!stateChanged) return;
+    for (const actor of game.actors ?? []) {
+      if (actor.type !== "survivor" || !actor.sheet?.rendered) continue;
+      Promise.resolve(actor.sheet.render({force: true})).catch(error => {
+        console.warn("Zombicide | Could not refresh a Survivor sheet after mission state changed", error);
+      });
+    }
+  });
+}

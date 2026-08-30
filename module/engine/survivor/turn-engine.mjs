@@ -7,6 +7,30 @@ function assertNoActiveSurvivor(state) {
   assertRule(!state.activeSurvivorUuid, "ACTIVATION_IN_PROGRESS", "End the current Survivor activation before changing player setup.");
 }
 
+export function getSurvivorTurnProgress(state) {
+  const activated = new Set(uniqueStrings(state?.activatedSurvivorUuids));
+  const players = uniqueStrings(state?.playerOrder).map(playerUserUuid => {
+    const assignedSurvivorUuids = uniqueStrings(state?.survivorsByPlayer?.[playerUserUuid]);
+    const pendingSurvivorUuids = assignedSurvivorUuids.filter(uuid => !activated.has(uuid));
+    return {
+      playerUserUuid,
+      assignedSurvivorUuids,
+      pendingSurvivorUuids,
+      complete: assignedSurvivorUuids.length > 0 && pendingSurvivorUuids.length === 0
+    };
+  });
+  const assignedSurvivorUuids = uniqueStrings(players.flatMap(player => player.assignedSurvivorUuids));
+  const pendingSurvivorUuids = uniqueStrings(players.flatMap(player => player.pendingSurvivorUuids));
+  return {
+    players,
+    assignedSurvivorUuids,
+    pendingSurvivorUuids,
+    activatedCount: assignedSurvivorUuids.length - pendingSurvivorUuids.length,
+    totalCount: assignedSurvivorUuids.length,
+    complete: assignedSurvivorUuids.length > 0 && pendingSurvivorUuids.length === 0
+  };
+}
+
 export function configureRoster(state, {playerOrder, survivorsByPlayer, firstPlayerUserUuid = null}) {
   const next = clone(state);
   assertNoActiveSurvivor(next);
@@ -109,16 +133,17 @@ export function endActivation(state, {playerUserUuid, survivorUuid}) {
   actionState.status = "ended";
   next.activeSurvivorUuid = null;
   next.activatedSurvivorUuids = uniqueStrings([...next.activatedSurvivorUuids, survivorUuid]);
-  const assigned = next.survivorsByPlayer[playerUserUuid] ?? [];
-  const playerComplete = assigned.every(uuid => next.activatedSurvivorUuids.includes(uuid));
-  if (!playerComplete) return next;
+  const progress = getSurvivorTurnProgress(next);
+  const currentPlayer = progress.players.find(player => player.playerUserUuid === playerUserUuid);
+  if (currentPlayer?.pendingSurvivorUuids.length) return next;
 
   next.completedPlayerUserUuids = uniqueStrings([...next.completedPlayerUserUuids, playerUserUuid]);
   const currentIndex = next.playerOrder.indexOf(playerUserUuid);
   let nextPlayer = null;
   for (let offset = 1; offset <= next.playerOrder.length; offset += 1) {
     const candidate = next.playerOrder[(currentIndex + offset) % next.playerOrder.length];
-    if (!next.completedPlayerUserUuids.includes(candidate)) {
+    const candidateProgress = progress.players.find(player => player.playerUserUuid === candidate);
+    if (candidateProgress?.pendingSurvivorUuids.length) {
       nextPlayer = candidate;
       break;
     }

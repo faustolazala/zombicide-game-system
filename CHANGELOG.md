@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — 2026-08-30
+
+- Derive final Survivor Phase completion from the remaining assigned Survivors and skip stale empty player entries.
+- Refresh open Survivor sheets on every client when authoritative mission Scene state changes.
+- Show localized phase names, completed/total progress, and pending Survivor names in the turn tracker.
+- Announce the transition to Zombie Phase in chat and explain that Zombie automation begins in Milestone 6.
+
 ## 0.2.1 — 2026-08-30
 
 - Repair Survivor assignment and action-state maps whose Document UUID keys were expanded by Foundry persistence.

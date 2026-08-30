@@ -130,3 +130,33 @@ test("roster configuration is GM-only", async () => {
   );
   assert.equal(configured.state.activePlayerUserUuid, "User.a");
 });
+
+test("final authority activation announces the Zombie Phase transition", async () => {
+  installGlobals();
+  let state = rosterState();
+  let result = await SURVIVOR_COMMAND_HANDLERS[SURVIVOR_COMMANDS.START_ACTIVATION](
+    state,
+    {transactionId: "start-a", payload: {survivorUuid: "Actor.s1"}},
+    {requesterUserId: "player-a"}
+  );
+  result = await SURVIVOR_COMMAND_HANDLERS[SURVIVOR_COMMANDS.END_ACTIVATION](
+    result.state,
+    {transactionId: "end-a", payload: {survivorUuid: "Actor.s1"}},
+    {requesterUserId: "player-a"}
+  );
+  result = await SURVIVOR_COMMAND_HANDLERS[SURVIVOR_COMMANDS.START_ACTIVATION](
+    result.state,
+    {transactionId: "start-b", payload: {survivorUuid: "Actor.s2"}},
+    {requesterUserId: "player-b"}
+  );
+  result = await SURVIVOR_COMMAND_HANDLERS[SURVIVOR_COMMANDS.END_ACTIVATION](
+    result.state,
+    {transactionId: "end-b", payload: {survivorUuid: "Actor.s2"}},
+    {requesterUserId: "player-b"}
+  );
+  assert.equal(result.state.phase, "zombie");
+  assert.deepEqual(result.events.map(event => event.type), [
+    "survivorActivationEnded",
+    "survivorPhaseEnded"
+  ]);
+});

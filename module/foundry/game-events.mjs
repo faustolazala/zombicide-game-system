@@ -6,6 +6,7 @@ const CHAT_EVENT_TYPES = new Set([
   "survivorActionSpent",
   "survivorActionRefunded",
   "survivorActivationEnded",
+  "survivorPhaseEnded",
   "inventoryItemMoved",
   "inventoryItemDiscarded",
   "inventoryItemTraded",

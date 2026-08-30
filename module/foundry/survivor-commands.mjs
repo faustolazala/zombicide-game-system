@@ -193,7 +193,9 @@ async function endActivationHandler(state, command, context) {
   const survivor = await requireSurvivor(command.payload?.survivorUuid);
   const {assignedPlayer} = requireTurnControl(state, survivor.uuid, context);
   const next = endActivation(state, {playerUserUuid: assignedPlayer, survivorUuid: survivor.uuid});
-  return {state: next, events: [{type: "survivorActivationEnded", survivorUuid: survivor.uuid}]};
+  const events = [{type: "survivorActivationEnded", survivorUuid: survivor.uuid}];
+  if (state.phase === "survivor" && next.phase === "zombie") events.push({type: "survivorPhaseEnded"});
+  return {state: next, events};
 }
 
 async function moveItemHandler(state, command, context) {

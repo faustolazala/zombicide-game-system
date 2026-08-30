@@ -10,7 +10,12 @@ import {SkillData} from "../data/items/skill-data.mjs";
 import {WeaponData} from "../data/items/weapon-data.mjs";
 import {ZombicideActor} from "../documents/zombicide-actor.mjs";
 import {ZombicideItem} from "../documents/zombicide-item.mjs";
-import {SurvivorSheet, VehicleSheet, ZombieSheet} from "../applications/actor-sheet.mjs";
+import {
+  registerMissionStateSheetSync,
+  SurvivorSheet,
+  VehicleSheet,
+  ZombieSheet
+} from "../applications/actor-sheet.mjs";
 import {ZombicideItemSheet} from "../applications/item-sheet.mjs";
 
 export function registerDocumentsAndDataModels() {
@@ -62,4 +67,5 @@ export function registerSheets() {
     makeDefault: true,
     label: "ZOMBICIDE.SystemTitle"
   });
+  registerMissionStateSheetSync();
 }

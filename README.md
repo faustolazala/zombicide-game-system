@@ -44,7 +44,7 @@ The manifest tracks the newest completed milestone release. Before updating, bac
 6. Use the action buttons to spend actions while resolving their board consequences manually. Move, Search, Door, Objective, and attack automation belong to later milestones.
 7. Drag generic Weapon/Equipment Items onto the Survivor, then test Hand, Body, Backpack, trade, and discard controls.
 8. Test Adrenaline and Wound controls. Reaching maximum Wounds must immediately end the mission in defeat.
-9. Click **End Activation**. After all of the player's assigned Survivors activate once, control must pass to the next player. After all players finish, the phase becomes `zombie`.
+9. Click **End Activation**. After all of the player's assigned Survivors activate once, control must pass to the next player. The tracker shows completed/total and pending Survivors. After all players finish, every open sheet must show **Zombie Phase** and chat must announce the transition.
 10. Refresh both clients during the turn and confirm action, inventory, player-order, and phase state persists without duplicate actions.
 
 ## Development checks

@@ -6,6 +6,7 @@ import {
   assignSurvivor,
   configureRoster,
   endActivation,
+  getSurvivorTurnProgress,
   setFirstPlayer,
   startActivation
 } from "../module/engine/survivor/turn-engine.mjs";
@@ -51,6 +52,42 @@ test("allows each assigned Survivor once before passing play", () => {
   assert.deepEqual(state.completedPlayerUserUuids, ["User.a"]);
   state = startActivation(state, {playerUserUuid: "User.b", survivorUuid: "Actor.s3", actionState: actionState()});
   state = endActivation(state, {playerUserUuid: "User.b", survivorUuid: "Actor.s3"});
+  assert.equal(state.phase, "zombie");
+  assert.equal(state.activePlayerUserUuid, null);
+  assert.deepEqual(getSurvivorTurnProgress(state), {
+    players: [
+      {
+        playerUserUuid: "User.a",
+        assignedSurvivorUuids: ["Actor.s1", "Actor.s2"],
+        pendingSurvivorUuids: [],
+        complete: true
+      },
+      {
+        playerUserUuid: "User.b",
+        assignedSurvivorUuids: ["Actor.s3"],
+        pendingSurvivorUuids: [],
+        complete: true
+      }
+    ],
+    assignedSurvivorUuids: ["Actor.s1", "Actor.s2", "Actor.s3"],
+    pendingSurvivorUuids: [],
+    activatedCount: 3,
+    totalCount: 3,
+    complete: true
+  });
+});
+
+test("skips stale empty player entries when the final assigned Survivor ends", () => {
+  let state = configureRoster(createInitialGameState(), {
+    playerOrder: ["User.a", "User.b"],
+    survivorsByPlayer: {"User.a": ["Actor.s1"], "User.b": ["Actor.s2"]}
+  });
+  state.playerOrder.push("User.stale");
+  state.survivorsByPlayer["User.stale"] = [];
+  state = startActivation(state, {playerUserUuid: "User.a", survivorUuid: "Actor.s1", actionState: actionState()});
+  state = endActivation(state, {playerUserUuid: "User.a", survivorUuid: "Actor.s1"});
+  state = startActivation(state, {playerUserUuid: "User.b", survivorUuid: "Actor.s2", actionState: actionState()});
+  state = endActivation(state, {playerUserUuid: "User.b", survivorUuid: "Actor.s2"});
   assert.equal(state.phase, "zombie");
   assert.equal(state.activePlayerUserUuid, null);
 });

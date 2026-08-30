@@ -37,11 +37,23 @@
     <section class="turn-panel">
       <h2>{{localize "ZOMBICIDE.Turn.Title"}}</h2>
       <div class="turn-summary">
-        <span>{{localize "ZOMBICIDE.Turn.Phase"}}: <strong>{{missionPhase}}</strong></span>
+        <span>{{localize "ZOMBICIDE.Turn.Phase"}}: <strong>{{localize missionPhaseLabel}}</strong></span>
         <span>{{localize "ZOMBICIDE.Turn.FirstPlayer"}}: <strong>{{firstPlayerName}}</strong></span>
         <span>{{localize "ZOMBICIDE.Turn.ActivePlayer"}}: <strong>{{activePlayerName}}</strong></span>
         <span>{{localize "ZOMBICIDE.Turn.Status"}}: <strong>{{activationStatus}}</strong></span>
+        <span>{{localize "ZOMBICIDE.Turn.Progress"}}: <strong>{{activatedSurvivorCount}} / {{assignedSurvivorCount}}</strong></span>
       </div>
+
+      {{#if isZombiePhase}}
+        <p class="hint">{{localize "ZOMBICIDE.Turn.ZombiePhaseNotice"}}</p>
+      {{else}}
+        {{#if pendingSurvivors.length}}
+          <p class="hint">
+            {{localize "ZOMBICIDE.Turn.Pending"}}:
+            {{#each pendingSurvivors}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+          </p>
+        {{/if}}
+      {{/if}}
 
       {{#unless missionConfigured}}
         <p class="warning">{{localize "ZOMBICIDE.Turn.NotConfigured"}}</p>
