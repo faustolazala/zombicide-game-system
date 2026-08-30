@@ -12,6 +12,17 @@ test("manifest is pinned exactly to Foundry 13.351", () => {
   });
 });
 
+test("manifest provides stable install and versioned download URLs", () => {
+  assert.equal(
+    manifest.manifest,
+    "https://raw.githubusercontent.com/faustolazala/zombicide-game-system/main/system.json"
+  );
+  assert.equal(
+    manifest.download,
+    `https://github.com/faustolazala/zombicide-game-system/releases/download/v${manifest.version}/zombicide-v${manifest.version}.zip`
+  );
+});
+
 test("manifest declares all Milestone 1 document subtypes", () => {
   assert.deepEqual(Object.keys(manifest.documentTypes.Actor), ["survivor", "zombie", "vehicle"]);
   assert.deepEqual(Object.keys(manifest.documentTypes.Item), ["weapon", "equipment", "skill"]);

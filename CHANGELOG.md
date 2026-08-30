@@ -7,3 +7,4 @@
 - Add minimal ApplicationV2 sheets.
 - Add versioned Scene state, migrations, command revisions, socket requests, and GM election.
 - Add generic placeholder content and pure-engine tests.
+- Add direct Foundry installation and update metadata for the GitHub release.

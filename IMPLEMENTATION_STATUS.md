@@ -8,6 +8,7 @@ Target: **Foundry VTT 13.351**
 - [x] `system.json`, ES-module entry point, styles, and localization created.
 - [x] Manifest compatibility pinned to minimum/verified/maximum `13.351`.
 - [x] Pure Node test command added.
+- [x] Installable GitHub release metadata and stable Manifest URL configured.
 - [ ] Launch verified inside a Foundry 13.351 world (waiting for the local installation supplied by the user).
 
 ## Milestone 1 — Core Documents

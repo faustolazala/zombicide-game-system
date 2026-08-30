@@ -10,9 +10,13 @@
   },
   "authors": [
     {
-      "name": "Zombicide Game System contributors"
+      "name": "Zombicide Game System contributors",
+      "url": "https://github.com/faustolazala/zombicide-game-system"
     }
   ],
+  "url": "https://github.com/faustolazala/zombicide-game-system",
+  "manifest": "https://raw.githubusercontent.com/faustolazala/zombicide-game-system/main/system.json",
+  "download": "https://github.com/faustolazala/zombicide-game-system/releases/download/v0.1.0/zombicide-v0.1.0.zip",
   "esmodules": [
     "zombicide.mjs"
   ],

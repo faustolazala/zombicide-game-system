@@ -24,6 +24,16 @@ This repository deliberately targets **Foundry VTT 13.351 exactly**. `system.jso
    await game.zombicide.createPlaceholderContent()
    ```
 
+## Install from Foundry
+
+From Foundry's **Setup → Game Systems → Install System** dialog, paste this URL into **Manifest URL**:
+
+```text
+https://raw.githubusercontent.com/faustolazala/zombicide-game-system/main/system.json
+```
+
+The manifest tracks the newest completed milestone release. Before updating, back up any test world containing data you want to preserve.
+
 ## Development checks
 
 Run the Foundry-independent state and command tests with:
