@@ -5,7 +5,8 @@ import {
   createInitialGameState,
   GameStateModel,
   GameStateValidationError,
-  migrateGameState
+  migrateGameState,
+  serializeGameStateForStorage
 } from "../module/state/game-state-model.mjs";
 
 test("creates the versioned canonical Scene state", () => {
@@ -56,4 +57,41 @@ test("coerces malformed mapping fields to safe records", () => {
   const state = GameStateModel.from(source).toObject();
   assert.deepEqual(state.noise, {});
   assert.deepEqual(state.objectiveState, {});
+});
+
+test("repairs Document UUID keys expanded by Foundry persistence", () => {
+  const source = createInitialGameState();
+  source.survivorsByPlayer = {User: {player1: ["Actor.survivor1"]}};
+  source.actionStateBySurvivorUuid = {
+    Actor: {
+      survivor1: {
+        status: "active",
+        general: {available: 3, spent: 1},
+        restricted: {},
+        ledger: []
+      }
+    }
+  };
+
+  const state = GameStateModel.from(source).toObject();
+  assert.deepEqual(state.survivorsByPlayer, {"User.player1": ["Actor.survivor1"]});
+  assert.equal(state.actionStateBySurvivorUuid["Actor.survivor1"].general.spent, 1);
+});
+
+test("encodes Document UUID map keys for Foundry-safe storage and round trips them", () => {
+  const source = createInitialGameState();
+  source.survivorsByPlayer = {"User.player1": ["Actor.survivor1"]};
+  source.actionStateBySurvivorUuid = {
+    "Actor.survivor1": {
+      status: "ready",
+      general: {available: 3, spent: 0},
+      restricted: {},
+      ledger: []
+    }
+  };
+
+  const stored = serializeGameStateForStorage(source);
+  assert.deepEqual(Object.keys(stored.survivorsByPlayer), ["zmk_User%2Eplayer1"]);
+  assert.deepEqual(Object.keys(stored.actionStateBySurvivorUuid), ["zmk_Actor%2Esurvivor1"]);
+  assert.deepEqual(GameStateModel.from(stored).toObject(), source);
 });

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — 2026-08-30
+
+- Repair Survivor assignment and action-state maps whose Document UUID keys were expanded by Foundry persistence.
+- Encode Document UUID map keys before saving new Scene state.
+- Guard Survivor sheet and command assignment reads against malformed legacy entries.
+
 ## 0.2.0 — 2026-08-30
 
 - Add the authority-validated Survivor activation and player-turn engine.

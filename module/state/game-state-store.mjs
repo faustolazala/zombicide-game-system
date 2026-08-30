@@ -3,7 +3,7 @@ import {
   SCENE_STATE_FLAG,
   SYSTEM_ID
 } from "../config/constants.mjs";
-import {GameStateModel} from "./game-state-model.mjs";
+import {GameStateModel, serializeGameStateForStorage} from "./game-state-model.mjs";
 
 export class StateRevisionError extends Error {
   constructor(expected, actual) {
@@ -47,7 +47,7 @@ export async function saveGameState(scene, state, {expectedRevision} = {}) {
     throw new StateRevisionError(expectedRevision + 1, model.revision);
   }
 
-  await scene.setFlag(SYSTEM_ID, SCENE_STATE_FLAG, model.toObject());
+  await scene.setFlag(SYSTEM_ID, SCENE_STATE_FLAG, serializeGameStateForStorage(model));
   return model;
 }
 
@@ -57,6 +57,6 @@ export async function ensureActiveMissionState() {
   const source = scene.getFlag(SYSTEM_ID, SCENE_STATE_FLAG);
   if (source) return loadGameState(scene);
   const initial = GameStateModel.create({missionId: scene.id});
-  if (game.user.isGM) await scene.setFlag(SYSTEM_ID, SCENE_STATE_FLAG, initial.toObject());
+  if (game.user.isGM) await scene.setFlag(SYSTEM_ID, SCENE_STATE_FLAG, serializeGameStateForStorage(initial));
   return initial;
 }

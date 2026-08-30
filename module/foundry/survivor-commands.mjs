@@ -67,7 +67,7 @@ async function requireSurvivor(uuid) {
 
 function findAssignedPlayer(state, survivorUuid) {
   return Object.entries(state.survivorsByPlayer)
-    .find(([, survivorUuids]) => survivorUuids.includes(survivorUuid))?.[0] ?? null;
+    .find(([, survivorUuids]) => Array.isArray(survivorUuids) && survivorUuids.includes(survivorUuid))?.[0] ?? null;
 }
 
 function requireTurnControl(state, survivorUuid, context) {

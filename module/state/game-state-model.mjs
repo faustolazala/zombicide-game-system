@@ -10,6 +10,7 @@ export class GameStateValidationError extends Error {
 }
 
 const clone = value => structuredClone(value);
+const STORAGE_MAP_KEY_PREFIX = "zmk_";
 
 const isRecord = value => {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -22,6 +23,65 @@ const stringArray = value => Array.isArray(value)
   : [];
 
 const record = value => isRecord(value) ? clone(value) : {};
+
+function encodeStorageMapKey(key) {
+  return `${STORAGE_MAP_KEY_PREFIX}${encodeURIComponent(key).replaceAll(".", "%2E")}`;
+}
+
+function decodeStorageMapKey(key) {
+  if (!key.startsWith(STORAGE_MAP_KEY_PREFIX)) return null;
+  try {
+    return decodeURIComponent(key.slice(STORAGE_MAP_KEY_PREFIX.length));
+  } catch {
+    return null;
+  }
+}
+
+function normalizeDocumentUuidMap(value, {isLeaf, cleanLeaf}) {
+  const normalized = {};
+
+  function visit(node, path = []) {
+    if (!isRecord(node)) return;
+    for (const [rawKey, child] of Object.entries(node)) {
+      const decodedKey = decodeStorageMapKey(rawKey);
+      if (decodedKey !== null) {
+        if (isLeaf(child)) normalized[decodedKey] = cleanLeaf(child);
+        continue;
+      }
+
+      const nextPath = [...path, rawKey];
+      if (isLeaf(child)) normalized[nextPath.join(".")] = cleanLeaf(child);
+      else if (isRecord(child)) visit(child, nextPath);
+    }
+  }
+
+  visit(value);
+  return normalized;
+}
+
+function survivorAssignments(value) {
+  return normalizeDocumentUuidMap(value, {
+    isLeaf: Array.isArray,
+    cleanLeaf: stringArray
+  });
+}
+
+function actionStates(value) {
+  return normalizeDocumentUuidMap(value, {
+    isLeaf: entry => isRecord(entry) && (
+      typeof entry.status === "string"
+      || isRecord(entry.general)
+      || Array.isArray(entry.ledger)
+    ),
+    cleanLeaf: clone
+  });
+}
+
+function encodeDocumentUuidMap(value) {
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [encodeStorageMapKey(key), clone(entry)])
+  );
+}
 
 export function createInitialGameState({missionId = "", gameStarted = false} = {}) {
   return {
@@ -119,11 +179,11 @@ export function cleanGameState(source) {
     firstPlayerUserUuid: cleanNullableString(migrated.firstPlayerUserUuid),
     playerOrder: stringArray(migrated.playerOrder),
     activePlayerUserUuid: cleanNullableString(migrated.activePlayerUserUuid),
-    survivorsByPlayer: record(migrated.survivorsByPlayer),
+    survivorsByPlayer: survivorAssignments(migrated.survivorsByPlayer),
     completedPlayerUserUuids: stringArray(migrated.completedPlayerUserUuids),
     activeSurvivorUuid: cleanNullableString(migrated.activeSurvivorUuid),
     activatedSurvivorUuids: stringArray(migrated.activatedSurvivorUuids),
-    actionStateBySurvivorUuid: record(migrated.actionStateBySurvivorUuid),
+    actionStateBySurvivorUuid: actionStates(migrated.actionStateBySurvivorUuid),
     noise: record(migrated.noise),
     spawnOrder: stringArray(migrated.spawnOrder),
     buildingState: record(migrated.buildingState),
@@ -208,4 +268,11 @@ export class GameStateModel {
   toJSON() {
     return this.toObject();
   }
+}
+
+export function serializeGameStateForStorage(state) {
+  const source = GameStateModel.from(state).toObject();
+  source.survivorsByPlayer = encodeDocumentUuidMap(source.survivorsByPlayer);
+  source.actionStateBySurvivorUuid = encodeDocumentUuidMap(source.actionStateBySurvivorUuid);
+  return source;
 }

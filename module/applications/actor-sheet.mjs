@@ -75,7 +75,7 @@ export class ZombicideActorSheet extends HandlebarsApplicationMixin(ActorSheetV2
     const inventory = this.actor.toObject().system.inventory;
     const assignedPlayerUserUuid = missionState
       ? Object.entries(missionState.survivorsByPlayer)
-        .find(([, survivorUuids]) => survivorUuids.includes(this.actor.uuid))?.[0] ?? null
+        .find(([, survivorUuids]) => Array.isArray(survivorUuids) && survivorUuids.includes(this.actor.uuid))?.[0] ?? null
       : null;
     const actionState = missionState?.actionStateBySurvivorUuid?.[this.actor.uuid] ?? null;
     const remaining = actionState
@@ -93,7 +93,8 @@ export class ZombicideActorSheet extends HandlebarsApplicationMixin(ActorSheetV2
       .filter(user => user.active)
       .map(user => ({uuid: user.uuid, name: user.name, selected: user.uuid === assignedPlayerUserUuid}));
     const assignedSurvivorUuids = new Set(
-      Object.values(missionState?.survivorsByPlayer ?? {}).flat()
+      Object.values(missionState?.survivorsByPlayer ?? {})
+        .flatMap(survivorUuids => Array.isArray(survivorUuids) ? survivorUuids : [])
     );
     const tradeTargets = [...game.actors]
       .filter(actor => actor.type === "survivor" && actor.uuid !== this.actor.uuid && assignedSurvivorUuids.has(actor.uuid))
