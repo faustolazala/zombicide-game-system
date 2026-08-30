@@ -135,5 +135,7 @@ test("initialization and ready hooks expose a usable system API", async () => {
   assert.equal(typeof game.zombicide.commands.request, "function");
   assert.equal(typeof game.zombicide.state.ensure, "function");
   assert.equal(typeof game.zombicide.createPlaceholderContent, "function");
+  assert.equal(typeof game.zombicide.survivors.request, "function");
+  assert.equal(game.zombicide.survivors.commandTypes.START_ACTIVATION, "survivor.startActivation");
   assert.equal(onHooks.has("userConnected"), true);
 });

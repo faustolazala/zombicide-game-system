@@ -2,6 +2,9 @@ import {SOCKET_NAMESPACE} from "../config/constants.mjs";
 import {applyCommand, CommandValidationError, noOperationHandler} from "../commands/command-service.mjs";
 import {getActiveMissionScene, loadGameState, saveGameState} from "../state/game-state-store.mjs";
 import {getAuthorityUser, isAuthority, refreshAuthority} from "./authority.mjs";
+import {commitDocumentChanges} from "./document-transaction.mjs";
+import {MAX_RECENT_TRANSACTION_IDS} from "../state/game-state-model.mjs";
+import {publishGameEvents} from "./game-events.mjs";
 
 const PROTOCOL_VERSION = 1;
 const REQUEST_TIMEOUT_MS = 15_000;
@@ -9,6 +12,16 @@ const handlers = new Map([["system.noop", noOperationHandler]]);
 const pendingRequests = new Map();
 let authorityQueue = Promise.resolve();
 let socketRegistered = false;
+
+handlers.set("system.resumeAutomation", (state, _command, context) => {
+  const requester = game.users.get(context.requesterUserId);
+  if (!requester?.isGM) {
+    throw new CommandValidationError("GM_ONLY", "Only a GM may resume paused automation.");
+  }
+  state.flags.automationPaused = false;
+  state.flags.pauseReason = null;
+  return {state, events: [{type: "automationResumed", userId: requester.id}]};
+});
 
 export function registerCommandHandler(type, handler) {
   if (typeof type !== "string" || !type.length || typeof handler !== "function") {
@@ -19,7 +32,7 @@ export function registerCommandHandler(type, handler) {
 }
 
 export function unregisterCommandHandler(type) {
-  if (type === "system.noop") return false;
+  if (["system.noop", "system.resumeAutomation"].includes(type)) return false;
   return handlers.delete(type);
 }
 
@@ -51,19 +64,46 @@ async function executeRequest(message) {
 
   const handler = handlers.get(message.command?.type);
   const current = await loadGameState(scene);
+  if (current.toObject().flags.automationPaused && message.command?.type !== "system.resumeAutomation") {
+    throw new CommandValidationError("AUTOMATION_PAUSED", "Automation is paused after an incomplete transaction; a GM must reconcile and resume it.");
+  }
   const result = await applyCommand(current, message.command, handler, {
     requesterUserId: message.requesterUserId,
     scene
   });
 
-  if (result.changes.length > 0) {
-    throw new CommandValidationError(
-      "DOCUMENT_COMMIT_UNAVAILABLE",
-      "Milestone 1 only accepts state-only commands; document change commits are added with the gameplay engines."
-    );
+  let documentsApplied = 0;
+  try {
+    if (result.changes.length > 0) {
+      ({appliedChanges: documentsApplied} = await commitDocumentChanges(result.changes, {
+        transactionId: result.transactionId
+      }));
+    }
+    await saveGameState(scene, result.state, {expectedRevision: result.previousRevision});
+    try {
+      await publishGameEvents(result.events, {transactionId: result.transactionId});
+    } catch (chatError) {
+      console.warn("Zombicide | Could not publish command events to chat", chatError);
+    }
+  } catch (error) {
+    const partial = documentsApplied > 0 || (error.appliedChanges ?? 0) > 0;
+    if (partial) {
+      const paused = current.toObject();
+      paused.revision += 1;
+      paused.lastTransactionId = message.command.transactionId;
+      paused.recentTransactionIds = [...paused.recentTransactionIds, message.command.transactionId]
+        .slice(-MAX_RECENT_TRANSACTION_IDS);
+      paused.flags.automationPaused = true;
+      paused.flags.pauseReason = `Partial transaction ${message.command.transactionId}: ${error.message}`;
+      try {
+        await saveGameState(scene, paused, {expectedRevision: current.revision});
+      } catch (pauseError) {
+        console.error("Zombicide | Failed to persist the automation pause", pauseError);
+      }
+      error.code = "PARTIAL_TRANSACTION";
+    }
+    throw error;
   }
-
-  await saveGameState(scene, result.state, {expectedRevision: result.previousRevision});
   return result;
 }
 

@@ -34,3 +34,68 @@
   min-height: 8rem;
   resize: vertical;
 }
+
+.zombicide.sheet .turn-panel,
+.zombicide.sheet .inventory-list {
+  border: 1px solid color-mix(in srgb, var(--zombicide-accent), transparent 55%);
+  border-radius: 4px;
+  padding: 0.65rem;
+}
+
+.zombicide.sheet .turn-summary,
+.zombicide.sheet .activation-controls,
+.zombicide.sheet .gm-setup-controls,
+.zombicide.sheet .item-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.zombicide.sheet .turn-summary {
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.zombicide.sheet .action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.zombicide.sheet .tracked-value {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.3rem;
+  align-items: center;
+  border-left: 4px solid #5d769b;
+  padding: 0.4rem;
+}
+
+.zombicide.sheet .danger-yellow { border-color: #b99d1c; }
+.zombicide.sheet .danger-orange { border-color: #c4661b; }
+.zombicide.sheet .danger-red { border-color: #a11e25; }
+
+.zombicide.sheet .inventory-list {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.5rem 0;
+}
+
+.zombicide.sheet .inventory-list li {
+  display: grid;
+  gap: 0.35rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  padding-bottom: 0.45rem;
+}
+
+.zombicide.sheet .warning {
+  color: var(--zombicide-accent);
+  font-weight: 700;
+}
+
+.zombicide.sheet .hint {
+  opacity: 0.8;
+  font-style: italic;
+}

@@ -17,6 +17,11 @@ import {
 } from "./module/state/game-state-store.mjs";
 import {GameStateModel} from "./module/state/game-state-model.mjs";
 import {createPlaceholderContent} from "./module/content/placeholder-content.mjs";
+import {
+  registerSurvivorCommands,
+  requestSurvivorCommand,
+  SURVIVOR_COMMANDS
+} from "./module/foundry/survivor-commands.mjs";
 
 Hooks.once("init", () => {
   console.info(`${SYSTEM_TITLE} | Initializing for Foundry ${TARGET_FOUNDRY_VERSION}`);
@@ -24,10 +29,15 @@ Hooks.once("init", () => {
   registerSheets();
   registerSettings();
   registerAuthorityHooks();
+  registerSurvivorCommands();
 
   game.zombicide = {
     GameStateModel,
     createPlaceholderContent,
+    survivors: {
+      commandTypes: SURVIVOR_COMMANDS,
+      request: requestSurvivorCommand
+    },
     commands: {
       register: registerCommandHandler,
       unregister: unregisterCommandHandler,

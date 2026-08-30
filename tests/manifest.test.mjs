@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 
 const manifest = JSON.parse(await readFile(new URL("../system.json", import.meta.url), "utf8"));
+const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 
 test("manifest is pinned exactly to Foundry 13.351", () => {
   assert.deepEqual(manifest.compatibility, {
@@ -13,6 +14,7 @@ test("manifest is pinned exactly to Foundry 13.351", () => {
 });
 
 test("manifest provides stable install and versioned download URLs", () => {
+  assert.equal(manifest.version, packageJson.version);
   assert.equal(
     manifest.manifest,
     "https://raw.githubusercontent.com/faustolazala/zombicide-game-system/main/system.json"

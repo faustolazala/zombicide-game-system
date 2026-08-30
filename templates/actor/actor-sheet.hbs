@@ -8,16 +8,79 @@
   </header>
 
   {{#if isSurvivor}}
-    <section class="field-grid">
-      <label>{{localize "ZOMBICIDE.Fields.Wounds"}}
-        <input name="system.wounds.value" type="number" min="0" value="{{system.wounds.value}}" {{#unless editable}}disabled{{/unless}}>
-      </label>
-      <label>{{localize "ZOMBICIDE.Fields.Adrenaline"}}
-        <input name="system.adrenaline.value" type="number" min="0" value="{{system.adrenaline.value}}" {{#unless editable}}disabled{{/unless}}>
-      </label>
+    <section class="field-grid survivor-vitals">
+      <div class="tracked-value">
+        <span>{{localize "ZOMBICIDE.Fields.Wounds"}}</span>
+        <strong>{{system.wounds.value}} / {{maximumWounds}}</strong>
+        {{#if canAdjustVitals}}
+          <button type="button" data-action="applyWound" title="{{localize 'ZOMBICIDE.Vitals.ApplyWound'}}">+</button>
+        {{/if}}
+        {{#if isGm}}
+          <button type="button" data-action="healWound" title="{{localize 'ZOMBICIDE.Vitals.HealWound'}}">−</button>
+        {{/if}}
+      </div>
+      <div class="tracked-value danger-{{dangerLevel}}">
+        <span>{{localize "ZOMBICIDE.Fields.Adrenaline"}}</span>
+        <strong>{{system.adrenaline.value}} — {{localize dangerLabel}}</strong>
+        {{#if canAdjustVitals}}
+          <button type="button" data-action="gainAdrenaline" title="{{localize 'ZOMBICIDE.Vitals.GainAdrenaline'}}">+</button>
+        {{/if}}
+        {{#if isGm}}
+          <button type="button" data-action="decreaseAdrenaline" title="{{localize 'ZOMBICIDE.Vitals.LoseAdrenaline'}}">−</button>
+        {{/if}}
+      </div>
       <label>{{localize "ZOMBICIDE.Fields.Actions"}}
-        <input name="system.actions.baseOverride" type="number" min="0" value="{{system.actions.baseOverride}}" placeholder="3" {{#unless editable}}disabled{{/unless}}>
+        <input name="system.actions.baseOverride" type="number" min="0" value="{{system.actions.baseOverride}}" placeholder="3" {{#unless isGm}}disabled{{/unless}}>
       </label>
+    </section>
+
+    <section class="turn-panel">
+      <h2>{{localize "ZOMBICIDE.Turn.Title"}}</h2>
+      <div class="turn-summary">
+        <span>{{localize "ZOMBICIDE.Turn.Phase"}}: <strong>{{missionPhase}}</strong></span>
+        <span>{{localize "ZOMBICIDE.Turn.FirstPlayer"}}: <strong>{{firstPlayerName}}</strong></span>
+        <span>{{localize "ZOMBICIDE.Turn.ActivePlayer"}}: <strong>{{activePlayerName}}</strong></span>
+        <span>{{localize "ZOMBICIDE.Turn.Status"}}: <strong>{{activationStatus}}</strong></span>
+      </div>
+
+      {{#unless missionConfigured}}
+        <p class="warning">{{localize "ZOMBICIDE.Turn.NotConfigured"}}</p>
+      {{/unless}}
+
+      {{#if isGm}}
+        <div class="gm-setup-controls">
+          <select name="assignmentUserUuid">
+            {{#each users}}
+              <option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/each}}
+          </select>
+          <button type="button" data-action="assignSurvivor">{{localize "ZOMBICIDE.Turn.Assign"}}</button>
+          <button type="button" data-action="setFirstPlayer">{{localize "ZOMBICIDE.Turn.SetFirstPlayer"}}</button>
+        </div>
+      {{/if}}
+
+      <div class="activation-controls">
+        {{#if canStartActivation}}
+          <button type="button" data-action="startActivation">{{localize "ZOMBICIDE.Turn.StartActivation"}}</button>
+        {{/if}}
+        {{#if isActiveSurvivor}}
+          <strong>{{localize "ZOMBICIDE.Turn.ActionsRemaining"}}: {{actionsRemaining.total}}</strong>
+        {{/if}}
+        {{#if canEndActivation}}
+          <button type="button" data-action="endActivation">{{localize "ZOMBICIDE.Turn.EndActivation"}}</button>
+        {{/if}}
+      </div>
+
+      {{#if canSpendActions}}
+        <p class="hint">{{localize "ZOMBICIDE.Turn.ManualBookkeepingHint"}}</p>
+        <div class="action-grid">
+          {{#each actionButtons}}
+            <button type="button" data-action="spendAction" data-action-type="{{id}}" {{#unless remaining}}disabled{{/unless}}>
+              {{localize label}} ({{remaining}})
+            </button>
+          {{/each}}
+        </div>
+      {{/if}}
     </section>
   {{/if}}
 
@@ -52,10 +115,39 @@
 
   {{#if items.length}}
     <section>
-      <h2>{{localize "ITEM.Type"}}</h2>
-      <ul>
+      <h2>{{#if isSurvivor}}{{localize "ZOMBICIDE.Inventory.Title"}}{{else}}{{localize "ITEM.Type"}}{{/if}}</h2>
+      {{#if isSurvivor}}
+        {{#if tradeTargets.length}}
+          <label>{{localize "ZOMBICIDE.Inventory.TradeTarget"}}
+            <select name="tradeTargetSurvivorUuid">
+              {{#each tradeTargets}}<option value="{{uuid}}">{{name}}</option>{{/each}}
+            </select>
+          </label>
+        {{/if}}
+      {{/if}}
+      <ul class="inventory-list">
         {{#each items}}
-          <li>{{name}} ({{type}})</li>
+          <li>
+            <span><strong>{{name}}</strong> ({{type}}{{#if ../isSurvivor}}, {{inventoryLocation}}{{/if}})</span>
+            {{#if isInventoryItem}}
+              {{#if ../canManageInventory}}
+                <div class="item-controls">
+                  {{#if canEquipHand}}
+                    <button type="button" data-action="moveItem" data-item-id="{{id}}" data-destination="leftHand">{{localize "ZOMBICIDE.Inventory.LeftHand"}}</button>
+                    <button type="button" data-action="moveItem" data-item-id="{{id}}" data-destination="rightHand">{{localize "ZOMBICIDE.Inventory.RightHand"}}</button>
+                  {{/if}}
+                  {{#if canEquipBody}}
+                    <button type="button" data-action="moveItem" data-item-id="{{id}}" data-destination="body">{{localize "ZOMBICIDE.Inventory.Body"}}</button>
+                  {{/if}}
+                  <button type="button" data-action="moveItem" data-item-id="{{id}}" data-destination="backpack">{{localize "ZOMBICIDE.Inventory.Backpack"}}</button>
+                  {{#if ../tradeTargets.length}}
+                    <button type="button" data-action="tradeItem" data-item-id="{{id}}">{{localize "ZOMBICIDE.Inventory.Trade"}}</button>
+                  {{/if}}
+                  <button type="button" data-action="discardItem" data-item-id="{{id}}">{{localize "ZOMBICIDE.Inventory.Discard"}}</button>
+                </div>
+              {{/if}}
+            {{/if}}
+          </li>
         {{/each}}
       </ul>
     </section>

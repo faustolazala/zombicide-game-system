@@ -1,7 +1,9 @@
+import {getDangerLevel, getMaximumWounds} from "../engine/survivor/vitals.mjs";
+
 export class ZombicideActor extends Actor {
   get maximumWounds() {
     if (this.type !== "survivor") return 0;
-    return this.system.wounds.maximumOverride ?? (this.system.identity.isKid ? 2 : 3);
+    return getMaximumWounds(this.system);
   }
 
   get isEliminated() {
@@ -10,11 +12,7 @@ export class ZombicideActor extends Actor {
 
   get currentDangerLevel() {
     if (this.type !== "survivor") return null;
-    const adrenaline = this.system.adrenaline.value;
-    if (adrenaline >= 43) return "red";
-    if (adrenaline >= 19) return "orange";
-    if (adrenaline >= 7) return "yellow";
-    return "blue";
+    return getDangerLevel(this.system.adrenaline.value);
   }
 
   get dangerLevel() {
